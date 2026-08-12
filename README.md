@@ -1,2 +1,3 @@
-This is my project 1key, it's fully open source do whatever you want with it. Enjoy :heart!
-games are not mine 
+# HyperZHub 1key port
+Credits to the 1key.lol developers
+this is a recontinuation of their project.
