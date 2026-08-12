@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8" />
+  <base href="https://cdn.jsdelivr.net/gh/genizy/braybray/aquapark-io/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aquapark IO</title>
+  <link rel="stylesheet" href="TemplateData/css/style.css" />
+  <script src="Build/UnityLoader.js"></script>
+  <script src="TemplateData/load.js"></script>
+</head>
+<body>
+  <div class="keepRatio">
+    <div class="webgl-content">
+      <button class="icon-resize-full" id="fullScreenButton" onclick="ToggleFullScreen()"></button>
+      <div id="gameContainer"></div>
+    </div>
+    <div id="loadingBlock">
+      <h1 class="subtitle">Aquapark.io</h1>
+      <img class="logo-game" src="Aquaparkio512.jpg" alt="Aquapark" />
+      <div id="progressBar">
+        <div style="margin-bottom:5px">Loading ...</div>
+        <div class="centered emptyBarbg"><div id="emptyBar"></div><div id="fullBar"></div></div>
+      </div>
+      <div class="cover" style="background-image:url(Aquaparkio512.jpg)"></div>
+    </div>
+  </div>
+</body>
+</html>

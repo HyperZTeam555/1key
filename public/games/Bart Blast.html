@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <base href="https://cdn.jsdelivr.net/gh/genizy/google-class@main/bart-blast/" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bart Blast</title>
+  <style>
+    html,body,#canvas{margin:0;padding:0;border:0}
+    body{background:#000;overflow:hidden}
+    #canvas{display:block;width:100vw;height:100vh}
+    #loading-text{position:fixed;top:16px;left:50%;transform:translateX(-50%);color:#fff;font:600 28px cursive;z-index:2}
+  </style>
+  <link rel="icon" type="image/png" href="index.icon.png" />
+</head>
+<body>
+  <div id="loading-text">LOADING...</div>
+  <canvas id="canvas"></canvas>
+  <script>
+    const originalFetch = window.fetch;
+    function getParts(file,start,end){ const p=[]; for(let i=start;i<=end;i++) p.push(`${file}.part${i}`); return p; }
+    async function merge(parts){ const bufs = await Promise.all(parts.map(async u => await (await fetch(u)).arrayBuffer())); return URL.createObjectURL(new Blob(bufs)); }
+    Promise.all([merge(getParts("index.pck",1,3)), merge(getParts("index.wasm",1,2))]).then(([pckUrl, wasmUrl]) => {
+      window.fetch = (url, ...args) => {
+        const s = String(url);
+        if (s.endsWith("index.pck")) return originalFetch(pckUrl, ...args);
+        if (s.endsWith("index.wasm")) return originalFetch(wasmUrl, ...args);
+        return originalFetch(url, ...args);
+      };
+      window.godotrunfunction?.();
+    });
+  </script>
+  <script src="index.js"></script>
+  <script>
+    const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":50031416,"index.wasm":36145869},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4,"serviceWorker":"index.service.worker.js"};
+    const engine = new Engine(GODOT_CONFIG);
+    window.godotrunfunction = function () {
+      engine.startGame().then(() => document.getElementById("loading-text")?.remove()).catch((e)=>{
+        document.getElementById("loading-text").textContent = String(e);
+      });
+    };
+  </script>
+</body>
+</html>

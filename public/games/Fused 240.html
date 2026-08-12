@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fused 240</title>
+  <style>
+    html,body,#canvas{margin:0;padding:0;border:0}
+    body{background:#000;overflow:hidden;touch-action:none}
+    #canvas{display:block;width:100vw;height:100vh}
+    #status{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-family:sans-serif;background:#000;z-index:2}
+  </style>
+  <link rel="icon" type="image/png" href="Fused 240.icon.png" />
+</head>
+<body>
+  <canvas id="canvas">Your browser does not support the canvas tag.</canvas>
+  <div id="status">LOADING...</div>
+  <script src="https://cdn.jsdelivr.net/gh/shayderrr/portsv4@5a492db2b4d7a2b409989961977f882530416920/fused240/Fused%20240.js"></script>
+  <script>
+    const status = document.getElementById("status");
+    const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"ensureCrossOriginIsolationHeaders":true,"executable":"Fused 240","experimentalVK":false,"fileSizes":{"Fused 240.pck":235238304,"Fused 240.wasm":52126319},"focusCanvas":true,"gdextensionLibs":[]};
+    const engine = new Engine(GODOT_CONFIG);
+    engine.startGame({
+      onProgress: (cur,total) => status.textContent = total > 0 ? `LOADING... ${Math.round((cur/total)*100)}%` : "LOADING..."
+    }).then(()=>status.remove()).catch((err)=>{ status.textContent = String(err); });
+  </script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en-us">
+<head>
+  <base href="https://cdn.jsdelivr.net/gh/Stinkalistic/UGS@main/UNITY/saul/" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Saul Goodman Run</title>
+  <style>
+    html,body{background:#000;width:100%;height:100%;overflow:hidden;padding:0;margin:0}
+    #gameContainer{position:absolute}
+    #unity-canvas{display:block}
+    #loading-text{color:#fff;font-family:sans-serif;text-align:center;margin-top:1em}
+  </style>
+  <script src="Build/loader.js"></script>
+</head>
+<body>
+  <div id="gameContainer">
+    <canvas id="unity-canvas" data-pixel-art></canvas>
+    <div id="loading-text">LOADING...</div>
+  </div>
+  <script>
+    const loadingText = document.getElementById("loading-text");
+    function getParts(file, count){ return Array.from({length:count}, (_,i)=>`${file}.part${i+1}`); }
+    async function mergeParts(parts, type){
+      const bufs = await Promise.all(parts.map(async p => new Uint8Array(await (await fetch(p)).arrayBuffer())));
+      const size = bufs.reduce((n,b)=>n+b.length,0);
+      const out = new Uint8Array(size);
+      let off = 0; for(const b of bufs){ out.set(b, off); off += b.length; }
+      return URL.createObjectURL(new Blob([out], {type}));
+    }
+    function resize(){
+      const c = document.getElementById("unity-canvas");
+      const container = document.getElementById("gameContainer");
+      const r = 540/960;
+      let w = window.innerWidth, h = Math.floor(w*r);
+      if (h > window.innerHeight){ h = window.innerHeight; w = Math.floor(h/r); }
+      container.style.width = c.style.width = `${w}px`;
+      container.style.height = c.style.height = `${h}px`;
+      container.style.left = `${Math.floor((window.innerWidth - w)/2)}px`;
+      container.style.top = `${Math.floor((window.innerHeight - h)/2)}px`;
+    }
+    window.addEventListener("resize", resize);
+    (async()=>{
+      resize();
+      const [dataUrl, wasmUrl, frameworkUrl] = await Promise.all([
+        mergeParts(getParts("Build/data.data",2)),
+        mergeParts(getParts("Build/wasm.wasm",2)),
+        mergeParts(["Build/framework.js"], "application/javascript"),
+      ]);
+      while(typeof createUnityInstance !== "function") await new Promise(r=>setTimeout(r,50));
+      const canvas = document.getElementById("unity-canvas");
+      const cfg = { dataUrl, frameworkUrl, codeUrl: wasmUrl, streamingAssetsUrl:"StreamingAssets", companyName:"", productName:"", productVersion:"" };
+      createUnityInstance(canvas, cfg, p => loadingText.textContent = `LOADING... ${Math.round(p*100)}%`)
+        .then(()=>loadingText.remove())
+        .catch((e)=>{ loadingText.textContent = `Failed to start: ${e}`; });
+    })();
+  </script>
+</body>
+</html>
